@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Modpacks de CurseForge</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gestor de Modpacks de CurseForge</h1>
+
+        <div class="main-layout">
+            <!-- Columna de Configuración y Búsqueda -->
+            <div class="config-column">
+                <div class="card">
+                    <h2>Configuración del Modpack</h2>
+                    <div class="filters">
+                        <select id="mc-version-select" class="select-box">
+                            <option value="">Cargando versiones...</option>
+                        </select>
+                        <select id="modloader-select" class="select-box" disabled>
+                            <option value="">Selecciona una versión de MC</option>
+                        </select>
+                        <select id="modloader-version-select" class="select-box" disabled>
+                            <option value="">Selecciona un modloader</option>
+                        </select>
+                    </div>
+                     <div class="search-bar">
+                        <input type="text" id="search-input" placeholder="Buscar mods...">
+                        <button id="search-button" class="btn">Buscar</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Resultados de Búsqueda</h2>
+                    <div id="loader" class="loader hidden"></div>
+                    <ul id="search-results">
+                        <li>Usa los filtros y busca un mod.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Columna del Modpack Actual -->
+            <div class="modpack-column">
+                <div class="card">
+                     <input type="text" id="modpack-name" placeholder="Nombre de tu Modpack">
+                    <h2>Tu Modpack</h2>
+                    <ul id="modpack-list">
+                        <li>Añade mods desde la búsqueda.</li>
+                    </ul>
+                    <div class="modpack-actions">
+                        <button id="save-button" class="btn" disabled>Guardar</button>
+                        <button id="export-button" class="btn" disabled>Exportar ZIP</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
