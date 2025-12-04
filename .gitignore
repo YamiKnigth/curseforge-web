@@ -1,21 +1,47 @@
-.gradle
-**/build/
-!**/src/**/build/
+# =============================================================================
+# .gitignore - Archivos y directorios a ignorar en Git
+# =============================================================================
 
-# Ignore Gradle GUI config
-gradle-app.setting
+# IMPORTANTE: NO subir config.php con credenciales reales
+# Crea un config.php.example para documentación
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
+# Archivos de configuración sensibles
+# config.php
 
-# Avoid ignore Gradle wrappper properties
-!gradle-wrapper.properties
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
 
-# Cache of project
-.gradletasknamecache
+# Logs
+*.log
+error_log
+access_log
 
-# Eclipse Gradle plugin generated files
-# Eclipse Core
-.project
-# JDT-specific (Eclipse Java Development Tools)
-.classpath
+# Archivos temporales de PHP
+*.cache
+*.tmp
+
+# Directorios de IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de base de datos locales
+*.sql.backup
+*.sql.bak
+
+# Node modules (si usas herramientas de build)
+node_modules/
+
+# Archivos de entorno
+.env
+.env.local
+
+# Archivos de backup
+*.bak
+*.backup
+*~

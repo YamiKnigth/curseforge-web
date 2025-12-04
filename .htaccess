@@ -1,0 +1,31 @@
+# =============================================================================
+# .htaccess - Configuración para Apache
+# Redirige todas las peticiones a /api/ hacia api_handler.php
+# =============================================================================
+
+# Habilitar el motor de reescritura
+RewriteEngine On
+
+# Redirigir /api/ a api_handler.php manteniendo los parámetros
+RewriteRule ^api/?$ api_handler.php [L,QSA]
+
+# Prevenir el acceso directo a archivos sensibles
+<FilesMatch "(config\.php|database\.sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Habilitar CORS (opcional, para desarrollo)
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
+
+# Configuración de PHP (si es necesario)
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+</IfModule>

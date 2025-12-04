@@ -7,57 +7,165 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Gestor de Modpacks de CurseForge</h1>
-
-        <div class="main-layout">
-            <!-- Columna de Configuración y Búsqueda -->
-            <div class="config-column">
-                <div class="card">
-                    <h2>Configuración del Modpack</h2>
-                    <div class="filters">
-                        <select id="mc-version-select" class="select-box">
-                            <option value="">Cargando versiones...</option>
-                        </select>
-                        <select id="modloader-select" class="select-box" disabled>
-                            <option value="">Selecciona una versión de MC</option>
-                        </select>
-                        <select id="modloader-version-select" class="select-box" disabled>
-                            <option value="">Selecciona un modloader</option>
-                        </select>
-                    </div>
-                     <div class="search-bar">
-                        <input type="text" id="search-input" placeholder="Buscar mods...">
-                        <button id="search-button" class="btn">Buscar</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>Resultados de Búsqueda</h2>
-                    <div id="loader" class="loader hidden"></div>
-                    <ul id="search-results">
-                        <li>Usa los filtros y busca un mod.</li>
-                    </ul>
-                </div>
+    <!-- Pantalla de Autenticación -->
+    <div id="auth-screen" class="screen">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>🎮 CurseForge Modpack Manager</h1>
+                <p>Gestiona tus modpacks de Minecraft fácilmente</p>
             </div>
-
-            <!-- Columna del Modpack Actual -->
-            <div class="modpack-column">
-                <div class="card">
-                     <input type="text" id="modpack-name" placeholder="Nombre de tu Modpack">
-                    <h2>Tu Modpack</h2>
-                    <ul id="modpack-list">
-                        <li>Añade mods desde la búsqueda.</li>
-                    </ul>
-                    <div class="modpack-actions">
-                        <button id="save-button" class="btn" disabled>Guardar</button>
-                        <button id="export-button" class="btn" disabled>Exportar ZIP</button>
+            
+            <!-- Formulario de Login -->
+            <div id="login-form" class="auth-form active">
+                <h2>Iniciar Sesión</h2>
+                <form id="login-form-element">
+                    <div class="form-group">
+                        <label for="login-username">Usuario</label>
+                        <input type="text" id="login-username" name="username" required>
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="login-password">Contraseña</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                </form>
+                <p class="auth-switch">
+                    ¿No tienes cuenta? <a href="#" id="show-register">Regístrate aquí</a>
+                </p>
+            </div>
+            
+            <!-- Formulario de Registro -->
+            <div id="register-form" class="auth-form">
+                <h2>Registrarse</h2>
+                <form id="register-form-element">
+                    <div class="form-group">
+                        <label for="register-username">Usuario</label>
+                        <input type="text" id="register-username" name="username" required minlength="3" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Contraseña</label>
+                        <input type="password" id="register-password" name="password" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password-confirm">Confirmar Contraseña</label>
+                        <input type="password" id="register-password-confirm" name="password_confirm" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registrarse</button>
+                </form>
+                <p class="auth-switch">
+                    ¿Ya tienes cuenta? <a href="#" id="show-login">Inicia sesión aquí</a>
+                </p>
             </div>
         </div>
     </div>
+
+    <!-- Pantalla Principal de la Aplicación -->
+    <div id="app-screen" class="screen" style="display: none;">
+        <!-- Barra de Navegación -->
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <h1>🎮 CurseForge Manager</h1>
+            </div>
+            <div class="navbar-user">
+                <span id="username-display">Usuario</span>
+                <button id="logout-btn" class="btn btn-secondary">Cerrar Sesión</button>
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <div class="main-container">
+            <!-- Panel de Control de Modpacks -->
+            <aside class="sidebar">
+                <div class="card">
+                    <h2>Mis Modpacks</h2>
+                    <button id="new-modpack-btn" class="btn btn-primary btn-block">➕ Nuevo Modpack</button>
+                    
+                    <div class="modpack-list" id="modpack-list">
+                        <p class="empty-message">No tienes modpacks creados</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Importar/Exportar</h3>
+                    <button id="import-btn" class="btn btn-secondary btn-block">📥 Importar ZIP</button>
+                    <button id="export-btn" class="btn btn-secondary btn-block" disabled>📤 Exportar ZIP</button>
+                    <input type="file" id="file-input" accept=".zip" style="display: none;">
+                </div>
+            </aside>
+
+            <!-- Área de Trabajo -->
+            <main class="content-area">
+                <!-- Vista: Sin modpack seleccionado -->
+                <div id="empty-view" class="view">
+                    <div class="empty-state">
+                        <h2>👈 Selecciona o crea un modpack para comenzar</h2>
+                        <p>Puedes crear un nuevo modpack, cargar uno existente o importar uno desde un archivo ZIP</p>
+                    </div>
+                </div>
+
+                <!-- Vista: Editor de Modpack -->
+                <div id="editor-view" class="view" style="display: none;">
+                    <div class="editor-header card">
+                        <div class="form-group">
+                            <label for="modpack-name-input">Nombre del Modpack</label>
+                            <input type="text" id="modpack-name-input" placeholder="Mi Modpack Increíble">
+                        </div>
+                        <div class="form-group">
+                            <label for="modpack-description-input">Descripción</label>
+                            <textarea id="modpack-description-input" rows="3" placeholder="Descripción de tu modpack"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="minecraft-version-select">Versión de Minecraft</label>
+                            <select id="minecraft-version-select">
+                                <option value="">Cargando versiones...</option>
+                            </select>
+                        </div>
+                        <div class="editor-actions">
+                            <button id="save-modpack-btn" class="btn btn-success">💾 Guardar Modpack</button>
+                            <button id="cancel-edit-btn" class="btn btn-secondary">❌ Cancelar</button>
+                            <button id="delete-modpack-btn" class="btn btn-danger" style="display: none;">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+
+                    <!-- Búsqueda de Mods -->
+                    <div class="card">
+                        <h2>Buscar Mods</h2>
+                        <div class="search-container">
+                            <input type="text" id="mod-search-input" placeholder="Buscar mods...">
+                            <button id="search-mods-btn" class="btn btn-primary">🔍 Buscar</button>
+                        </div>
+                        
+                        <div id="search-results" class="mod-grid">
+                            <p class="empty-message">Usa el campo de búsqueda para encontrar mods</p>
+                        </div>
+                        <div id="search-loader" class="loader" style="display: none;"></div>
+                    </div>
+
+                    <!-- Mods en el Modpack -->
+                    <div class="card">
+                        <h2>Mods en este Modpack (<span id="mod-count">0</span>)</h2>
+                        <div id="modpack-mods" class="mod-grid">
+                            <p class="empty-message">Añade mods desde la búsqueda</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal para Detalles del Mod -->
+    <div id="mod-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div id="mod-modal-body">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificaciones Toast -->
+    <div id="toast-container"></div>
+
     <script src="script.js"></script>
 </body>
 </html>
-

@@ -1,39 +1,87 @@
+-- =============================================================================
 -- database.sql
--- Script para crear las tablas necesarias en tu base de datos MySQL.
+-- Script SQL para crear la base de datos y las tablas del gestor de modpacks
+-- de CurseForge
+-- 
+-- Instrucciones:
+-- 1. Asegúrate de tener MySQL o MariaDB instalado
+-- 2. Ejecuta este script: mysql -u root -p < database.sql
+-- 3. Configura las credenciales en config.php
+-- =============================================================================
 
-CREATE DATABASE IF NOT EXISTS `s7_curseforge_web`;
+-- Crear la base de datos si no existe
+CREATE DATABASE IF NOT EXISTS `curseforge_manager`;
 
-USE `s7_curseforge_web`;
+-- Usar la base de datos
+USE `curseforge_manager`;
 
--- Tabla para almacenar los perfiles de usuario
--- Por ahora, es una estructura simple. Se puede expandir para incluir sesiones, etc.
-CREATE TABLE `users` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `username` VARCHAR(50) NOT NULL UNIQUE,
-  `password_hash` VARCHAR(255) NOT NULL,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- =============================================================================
+-- TABLA: users
+-- Almacena los usuarios registrados en la aplicación
+-- =============================================================================
 
--- Tabla para almacenar la configuración de los modpacks
-CREATE TABLE `modpacks` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `user_id` INT NOT NULL,
-  `name` VARCHAR(100) NOT NULL,
-  `game_id` INT DEFAULT 432, -- 432 es el ID de Minecraft
-  `minecraft_version` VARCHAR(50) NOT NULL,
-  `modloader_type` VARCHAR(50) NOT NULL, -- "Forge", "Fabric", "Quilt", etc.
-  `modloader_version` VARCHAR(50) NOT NULL,
-  `description` TEXT,
-  `last_updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY COMMENT 'ID único del usuario',
+  `username` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Nombre de usuario único',
+  `password_hash` VARCHAR(255) NOT NULL COMMENT 'Hash de la contraseña (bcrypt)',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha de creación del usuario',
+  INDEX `idx_username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci 
+COMMENT='Tabla de usuarios registrados';
+
+-- =============================================================================
+-- TABLA: modpacks
+-- Almacena la información de los modpacks creados por los usuarios
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS `modpacks` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY COMMENT 'ID único del modpack',
+  `user_id` INT NOT NULL COMMENT 'ID del usuario propietario',
+  `name` VARCHAR(100) NOT NULL COMMENT 'Nombre del modpack',
+  `description` TEXT COMMENT 'Descripción del modpack',
+  `minecraft_version` VARCHAR(20) NOT NULL COMMENT 'Versión de Minecraft',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha de creación',
+  INDEX `idx_user_id` (`user_id`),
+  INDEX `idx_name` (`name`),
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci 
+COMMENT='Tabla de modpacks';
 
--- Tabla para relacionar los mods con un modpack específico
-CREATE TABLE `modpack_mods` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `modpack_id` INT NOT NULL,
-  `mod_id` INT NOT NULL, -- El ID del mod en CurseForge
-  `is_required` BOOLEAN DEFAULT TRUE,
-  UNIQUE KEY `modpack_mod_unique` (`modpack_id`, `mod_id`), -- Evita duplicados
+-- =============================================================================
+-- TABLA: modpack_mods
+-- Relaciona los mods con cada modpack (tabla de relación N:M)
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS `modpack_mods` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY COMMENT 'ID único de la relación',
+  `modpack_id` INT NOT NULL COMMENT 'ID del modpack',
+  `curseforge_project_id` INT NOT NULL COMMENT 'ID del proyecto en CurseForge',
+  `curseforge_file_id` INT NOT NULL COMMENT 'ID del archivo específico en CurseForge',
+  `required` BOOLEAN DEFAULT TRUE COMMENT 'Indica si el mod es requerido u opcional',
+  INDEX `idx_modpack_id` (`modpack_id`),
+  INDEX `idx_project_id` (`curseforge_project_id`),
+  UNIQUE KEY `unique_modpack_mod` (`modpack_id`, `curseforge_project_id`, `curseforge_file_id`),
   FOREIGN KEY (`modpack_id`) REFERENCES `modpacks`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci 
+COMMENT='Tabla de relación entre modpacks y mods';
+
+-- =============================================================================
+-- DATOS DE PRUEBA (OPCIONAL)
+-- Puedes descomentar estas líneas para insertar datos de prueba
+-- =============================================================================
+
+-- Usuario de prueba (contraseña: test123)
+-- INSERT INTO `users` (`username`, `password_hash`) 
+-- VALUES ('testuser', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+
+-- =============================================================================
+-- VERIFICACIÓN
+-- =============================================================================
+
+-- Mostrar las tablas creadas
+SHOW TABLES;
+
+-- Mostrar la estructura de cada tabla
+DESCRIBE `users`;
+DESCRIBE `modpacks`;
+DESCRIBE `modpack_mods`;

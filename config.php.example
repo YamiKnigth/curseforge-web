@@ -1,10 +1,12 @@
 <?php
 /**
- * config.php
- * Archivo de configuración para la aplicación de gestión de modpacks de CurseForge
+ * config.php.example
+ * Archivo de configuración de ejemplo
  * 
- * IMPORTANTE: Este archivo contiene información sensible.
- * No lo expongas en el control de versiones o en el lado del cliente.
+ * INSTRUCCIONES:
+ * 1. Copia este archivo como config.php
+ * 2. Actualiza los valores con tus credenciales reales
+ * 3. NO subas config.php a Git
  */
 
 // =============================================================================
@@ -21,7 +23,7 @@ define('DB_NAME', 'curseforge_manager');  // Nombre de la base de datos
 // =============================================================================
 
 // Obtén tu API Key desde: https://console.curseforge.com/
-define('CURSEFORGE_API_KEY', '$2a$10$YRV1YaaZ1X9bIP4n42Lp/OgHnu949A.RJGtMnOxINx9UGX4ImUjbS');
+define('CURSEFORGE_API_KEY', 'TU_API_KEY_AQUI');
 
 // URL base de la API de CurseForge
 define('CURSEFORGE_API_BASE', 'https://api.curseforge.com');
